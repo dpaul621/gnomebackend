@@ -15,6 +15,7 @@ mongoose.connect(process.env.MONGODB_URI, {
 }).then(() => console.log('✅ Connected to MongoDB Atlas'))
   .catch(err => console.error('❌ MongoDB connection error:', err));
 
+// POST /player — Create new player
 app.post('/player', async (req, res) => {
   try {
     const player = new Player(req.body);
@@ -25,6 +26,20 @@ app.post('/player', async (req, res) => {
   }
 });
 
+// GET /player?name=XYZ — Get a single player
+app.get('/player', async (req, res) => {
+  const name = req.query.name;
+  if (!name) return res.status(400).json({ error: 'Name query param required' });
+
+  const player = await Player.findOne({ name });
+  if (player) {
+    res.json(player);
+  } else {
+    res.status(404).json(null); // No player found
+  }
+});
+
+// GET /players — (Optional) Get all players
 app.get('/players', async (req, res) => {
   const players = await Player.find();
   res.json(players);
