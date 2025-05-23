@@ -45,6 +45,25 @@ app.get('/players', async (req, res) => {
   res.json(players);
 });
 
+app.put('/player', async (req, res) => {
+  const { name, level } = req.body;
+  try {
+    const updatedPlayer = await Player.findOneAndUpdate(
+      { name },
+      { level },
+      { new: true }
+    );
+
+    if (!updatedPlayer) {
+      return res.status(404).json({ error: 'Player not found' });
+    }
+
+    res.json(updatedPlayer);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
